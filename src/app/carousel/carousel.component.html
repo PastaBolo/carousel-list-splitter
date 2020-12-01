@@ -1,0 +1,15 @@
+<div style="display: flex;">
+  <div [style.visibility]="circular || position > 0 ? 'visible' : 'hidden'" (click)="!animating && previous()"
+    class="navigation">
+    <i class="material-icons">navigate_before</i>
+  </div>
+  <div [@slide]="direction" (@slide.start)="animating = true" (@slide.done)="animating = false; direction = null"
+    class="carousel-content">
+    <ng-container *ngTemplateOutlet="items.toArray()[position]"></ng-container>
+  </div>
+  <div [style.visibility]="circular || position < items.toArray().length - 1 ? 'visible' : 'hidden'"
+    (click)="!animating && next()" class="navigation">
+    <i class="material-icons">navigate_next</i>
+  </div>
+</div>
+<div *ngIf="items.toArray().length > 1" class="pagination">{{ +position + 1 }} / {{ items.toArray().length }}</div>
