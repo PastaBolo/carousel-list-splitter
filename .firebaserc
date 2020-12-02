@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "carousel-list-splitter": {
+      "hosting": {
+        "carousel-list-splitter": [
+          "carousel-list-splitter"
+        ]
+      }
+    }
+  }
+}

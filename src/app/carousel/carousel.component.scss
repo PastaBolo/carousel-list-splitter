@@ -8,10 +8,20 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+
+  &.previous {
+    left: -30px;
+  }
+
+  &.next{
+    right: -30px;
+  }
 }
 
 .carousel-content {
-  flex: 1;
   overflow: hidden;
 }
 

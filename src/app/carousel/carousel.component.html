@@ -1,14 +1,14 @@
-<div style="display: flex;">
-  <div [style.visibility]="circular || position > 0 ? 'visible' : 'hidden'" (click)="!animating && previous()"
-    class="navigation">
-    <i class="material-icons">navigate_before</i>
-  </div>
-  <div [@slide]="direction" (@slide.start)="animating = true" (@slide.done)="animating = false; direction = null"
-    class="carousel-content">
+<div style="position: relative">
+  <div [@slide]="{value: direction, params: {spacing: spacing}}" (@slide.start)="animating = true"
+    (@slide.done)="animating = false; direction = null" class="carousel-content">
     <ng-container *ngTemplateOutlet="items.toArray()[position]"></ng-container>
   </div>
-  <div [style.visibility]="circular || position < items.toArray().length - 1 ? 'visible' : 'hidden'"
-    (click)="!animating && next()" class="navigation">
+  <div [style.visibility]="cyclic || position > 0 ? 'visible' : 'hidden'" (click)="!animating && previous()"
+    class="navigation previous">
+    <i class="material-icons">navigate_before</i>
+  </div>
+  <div [style.visibility]="cyclic || position < items.toArray().length - 1 ? 'visible' : 'hidden'"
+    (click)="!animating && next()" class="navigation next">
     <i class="material-icons">navigate_next</i>
   </div>
 </div>

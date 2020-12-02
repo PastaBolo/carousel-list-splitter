@@ -5,26 +5,18 @@ import { FormsModule } from '@angular/forms';
 import { LayoutModule } from '@angular/cdk/layout';
 
 import { AppComponent } from './app.component';
-import { ListSplitterDirective } from './list-splitter.directive';
-import { ListItemDirective } from './list-item.directive';
-import { ListChunkContainerDirective } from './list-chunk-container.directive';
-import { CarouselItemDirective } from './carousel-item.directive';
-import { CarouselComponent } from './carousel/carousel.component';
+import { ListSplitterModule } from './list-splitter/list-splitter.module';
+import { CarouselModule } from './carousel/carousel.module';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    ListSplitterDirective,
-    ListItemDirective,
-    ListChunkContainerDirective,
-    CarouselItemDirective,
-    CarouselComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
-    LayoutModule
+    LayoutModule,
+    ListSplitterModule,
+    CarouselModule
   ],
   providers: [],
   bootstrap: [AppComponent]

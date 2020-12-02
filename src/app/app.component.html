@@ -1,37 +1,78 @@
-<h3>List splitter with breakpoints</h3>
+<h3>List splitter - display flex (each line)- default item size strategy</h3>
 
-<ng-container #listSplitter="listSplitter" [listSplitter]="list" [chunkSize]="chunkSizeBreakpoints$ | async">
-  <div *ngFor="let chunk of listSplitter.chunks$ | async" class="chunk">
-    <div *ngFor="let item of chunk" class="item" [ngClass]="!item && 'empty'">{{ item }}</div>
+<label>
+  <input type="checkbox" #fillCheckbox="ngModel" [ngModel]="false">
+  <span>Fill with empty</span>
+</label>
+
+<ng-container #listSplitter1="listSplitter" [listSplitter]="list" [chunkSize]="chunkSize$ | async"
+  [fillWithEmpty]="fillCheckbox.value">
+  <div *ngFor="let chunk of listSplitter1.chunks$ | async" class="chunk" [style.margin-bottom.px]="20">
+    <div *ngFor="let chunkItem of chunk" class="item" [ngClass]="!chunkItem.item && 'empty'">
+      {{ chunkItem.item?.value }}
+    </div>
   </div>
 </ng-container>
 
 <hr>
 
+<!-- <h3>List splitter - display grid</h3>
+
+<div #listSplitter2="listSplitter" [listSplitter]="list" [chunkSize]="chunkSize$ | async" class="grid">
+  <ng-container *ngFor="let chunk of listSplitter2.chunks$ | async">
+    <div *ngFor="let chunkItem of chunk" class="item" [style.grid-column-start]="chunkItem.start"
+      [style.grid-column-end]="chunkItem.end">
+      {{ chunkItem.item.value }}
+    </div>
+  </ng-container>
+</div>
+
+<hr> -->
+
+<!-- <h3>List splitter - display grid - different size items</h3>
+
+<div #listSplitter3="listSplitter" [listSplitter]="list" [chunkSize]="chunkSize$ | async"
+  [itemSizeStrategy]="itemSizeStrategy" class="grid"
+  [style.grid-template-columns]="'repeat('+(chunkSize$ | async)+', 1fr)'">
+  <ng-container *ngFor="let chunk of listSplitter3.chunks$ | async">
+    <div *ngFor="let chunkItem of chunk" class="item"
+      [style.grid-column]="'auto / span ' + chunkItem.size">
+      {{ chunkItem.item.value }}
+    </div>
+  </ng-container>
+</div>
+
+<hr> -->
+
 <h3>Carousel</h3>
 
-<input type="checkbox" id="circular-checkbox" #circularCheckbox="ngModel" [ngModel]="false">
-<label for="circular-checkbox">Circular carousel</label>
+<label>
+  <input type="checkbox" #cyclicCheckbox1="ngModel" [ngModel]="false">
+  <span>Cyclic</span>
+</label>
 
-<app-carousel [circular]="circularCheckbox.value">
+<app-carousel [cyclic]="cyclicCheckbox1.value" spacing="20">
   <ng-container *ngFor="let item of list">
-    <div *carouselItem class="item">{{ item }}</div>
+    <div *carouselItem class="item">{{ item?.value }}</div>
   </ng-container>
 </app-carousel>
 
 <hr>
 
-<h3>Carousel with list splitter</h3>
+<h3>Carousel with list splitter and different size items</h3>
 
-<input type="checkbox" id="circular-with-splitter-checkbox" #circularWithSplitterCheckbox="ngModel" [ngModel]="false">
-<label for="circular-with-splitter-checkbox">Circular carousel</label>
+<label>
+  <input type="checkbox" #cyclicCheckbox2="ngModel" [ngModel]="false">
+  <span>Cyclic</span>
+</label>
 
-<app-carousel position="1" [circular]="circularWithSplitterCheckbox.value">
-  <ng-container #listSplitterCarousel="listSplitter" [listSplitter]="list" [chunkSize]="chunkSizeBreakpoints$ | async">
-    <ng-container *ngFor="let chunk of listSplitterCarousel.chunks$ | async">
-      <div *carouselItem class="chunk">
-        <div *ngFor="let item of chunk" class="item" [ngClass]="!item && 'empty'">{{ item }}</div>
-      </div>
+<app-carousel position="1" [cyclic]="cyclicCheckbox2.value" spacing="20">
+  <ng-container #listSplitter4="listSplitter" [listSplitter]="list" [chunkSize]="chunkSize$ | async"
+    [itemSizeStrategy]="itemSizeStrategy">
+    <ng-container *ngFor="let chunk of listSplitter4.chunks$ | async">
+      <ng-template carouselItem>
+        <ng-container *ngTemplateOutlet="chunkTmpl; context: {$implicit: chunk}"></ng-container>
+      </ng-template>
     </ng-container>
   </ng-container>
 </app-carousel>
@@ -40,20 +81,31 @@
 
 <h3>Carousel with list splitter and header items</h3>
 
-<input type="checkbox" id="circular-with-splitter-header-items-checkbox"
-  #circularWithSplitterHeaderItemsCheckbox="ngModel" [ngModel]="false">
-<label for="circular-with-splitter-header-items-checkbox">Circular carousel</label>
 
-<ng-container #listSplitterCarousel="listSplitter" [listSplitter]="list" [chunkSize]="chunkSizeBreakpoints$ | async">
-  <div class="chunk">
-    <div *ngFor="let item of (listSplitterCarousel.chunks$ | async | slice:0:1)[0]" class="item"
-      [ngClass]="!item && 'empty'">{{ item }}</div>
+<label>
+  <input type="checkbox" #cyclicCheckbox3="ngModel" [ngModel]="false">
+  <span>Cyclic</span>
+</label>
+
+<ng-container #listSplitter5="listSplitter" [listSplitter]="list" [chunkSize]="chunkSize$ | async"
+  [itemSizeStrategy]="itemSizeStrategy">
+  <div *ngFor="let chunk of (listSplitter5.chunks$ | async | slice:0:1)" [style.margin-bottom.px]="20">
+    <ng-container *ngTemplateOutlet="chunkTmpl; context: {$implicit: chunk}"></ng-container>
   </div>
-  <app-carousel [circular]="circularWithSplitterHeaderItemsCheckbox.value">
-    <ng-container *ngFor="let chunk of listSplitterCarousel.chunks$ | async | slice:1">
-      <div *carouselItem class="chunk">
-        <div *ngFor="let item of chunk" class="item" [ngClass]="!item && 'empty'">{{ item }}</div>
-      </div>
+
+  <app-carousel [cyclic]="cyclicCheckbox3.value" spacing="20">
+    <ng-container *ngFor="let chunk of listSplitter4.chunks$ | async | slice:1">
+      <ng-template carouselItem>
+        <ng-container *ngTemplateOutlet="chunkTmpl; context: {$implicit: chunk}"></ng-container>
+      </ng-template>
     </ng-container>
   </app-carousel>
 </ng-container>
+
+<ng-template #chunkTmpl let-chunk>
+  <div class="grid" [style.grid-template-columns]="'repeat('+(chunkSize$ | async)+', 1fr)'">
+    <div *ngFor="let chunkItem of chunk" class="item" [style.grid-column]="'auto / span ' + chunkItem.size">
+      {{ chunkItem.item.value }}
+    </div>
+  </div>
+</ng-template>

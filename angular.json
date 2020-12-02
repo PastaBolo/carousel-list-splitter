@@ -120,6 +120,10 @@
               "devServerTarget": "carousel-list-splitter:serve:production"
             }
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {}
         }
       }
     }

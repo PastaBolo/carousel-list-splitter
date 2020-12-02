@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, ContentChildren, Input, QueryList, 
 import { trigger, state, style, transition, group, query, animate } from '@angular/animations';
 import { BooleanInput, coerceBooleanProperty, coerceNumberProperty, NumberInput } from '@angular/cdk/coercion';
 
-import { CarouselItemDirective } from '../carousel-item.directive';
+import { CarouselItemDirective } from './carousel-item.directive';
 
 const modulo = (x: number, n: number) => ((x % n) + n) % n;
 
@@ -10,31 +10,31 @@ const modulo = (x: number, n: number) => ((x % n) + n) % n;
   selector: 'app-carousel',
   templateUrl: './carousel.component.html',
   styleUrls: ['./carousel.component.scss'],
-  // changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('slide', [
       state('*', style({ position: 'relative' })),
       transition('* => previous', [
         group([
           query(':enter', [
-            style({ transform: 'translateX(-100%)' }),
+            style({ transform: 'translateX(calc(-100% - {{spacing}}px))' }),
             animate('300ms ease-in-out', style({ transform: 'none' }))
           ]),
           query(':leave', [
             style({ position: 'absolute', left: 0 }),
-            animate('300ms ease-in-out', style({ left: '100%' }))
+            animate('300ms ease-in-out', style({ left: 'calc(100% + {{spacing}}px)' }))
           ])
         ])
       ]),
       transition('* => next', [
         group([
           query(':enter', [
-            style({ transform: 'translateX(100%)' }),
+            style({ transform: 'translateX(calc(100% + {{spacing}}px))' }),
             animate('300ms ease-in-out', style({ transform: 'none' }))
           ]),
           query(':leave', [
             style({ position: 'absolute', right: 0 }),
-            animate('300ms ease-in-out', style({ right: '100%' }))
+            animate('300ms ease-in-out', style({ right: 'calc(100% + {{spacing}}px)' }))
           ])
         ])
       ])
@@ -50,9 +50,11 @@ export class CarouselComponent {
   private _position = 0;
 
   @Input()
-  set circular(circular: BooleanInput) { this._circular = coerceBooleanProperty(circular); }
-  get circular() { return this._circular; }
-  private _circular = false;
+  set cyclic(cyclic: BooleanInput) { this._cyclic = coerceBooleanProperty(cyclic); }
+  get cyclic() { return this._cyclic; }
+  private _cyclic = false;
+
+  @Input() spacing = 0;
 
   direction: 'previous' | 'next' | null = null;
   animating = false;
