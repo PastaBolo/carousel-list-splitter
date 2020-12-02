@@ -1,4 +1,4 @@
-import { Component, ContentChildren, Input, QueryList, TemplateRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ContentChildren, Input, QueryList, TemplateRef } from '@angular/core';
 import { trigger, state, style, transition, group, query, animate } from '@angular/animations';
 import { BooleanInput, coerceBooleanProperty, coerceNumberProperty, NumberInput } from '@angular/cdk/coercion';
 
@@ -10,6 +10,7 @@ const modulo = (x: number, n: number) => ((x % n) + n) % n;
   selector: 'app-carousel',
   templateUrl: './carousel.component.html',
   styleUrls: ['./carousel.component.scss'],
+  // changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('slide', [
       state('*', style({ position: 'relative' })),

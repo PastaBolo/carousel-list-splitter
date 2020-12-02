@@ -1,42 +1,9 @@
-<!-- <h3>List splitter</h3>
-
-<label for="input-list" style="margin-right: 5px;">Items per chunk</label>
-<input type="number" id="input-list" #inputList="ngModel" ngModel="3">
-
-<ng-container listSplitter [chunkSize]="inputList.value">
-  <ng-template listChunkContainer let-itemsTmpl>
-    <div class="splitted-list">
-      <ng-container *ngFor="let itemTmpl of itemsTmpl">
-        <ng-container *ngTemplateOutlet="itemTmpl || emptyTmpl"></ng-container>
-        <ng-template #emptyTmpl>
-          <div class="item empty"></div>
-        </ng-template>
-      </ng-container>
-    </div>
-  </ng-template>
-  <ng-container *ngFor="let item of list">
-    <div *listItem class="item">{{ item }}</div>
-  </ng-container>
-</ng-container>
-
-<hr>
-
 <h3>List splitter with breakpoints</h3>
 
-<ng-container listSplitter [chunkSize]="chunkSizeBreakpoints$ | async">
-  <ng-template listChunkContainer let-itemsTmpl>
-    <div class="splitted-list">
-      <ng-container *ngFor="let itemTmpl of itemsTmpl">
-        <ng-container *ngTemplateOutlet="itemTmpl || emptyTmpl"></ng-container>
-        <ng-template #emptyTmpl>
-          <div class="item empty"></div>
-        </ng-template>
-      </ng-container>
-    </div>
-  </ng-template>
-  <ng-container *ngFor="let item of list">
-    <div *listItem class="item">{{ item }}</div>
-  </ng-container>
+<ng-container #listSplitter="listSplitter" [listSplitter]="list" [chunkSize]="chunkSizeBreakpoints$ | async">
+  <div *ngFor="let chunk of listSplitter.chunks$ | async" class="chunk">
+    <div *ngFor="let item of chunk" class="item" [ngClass]="!item && 'empty'">{{ item }}</div>
+  </div>
 </ng-container>
 
 <hr>
@@ -60,24 +27,16 @@
 <label for="circular-with-splitter-checkbox">Circular carousel</label>
 
 <app-carousel position="1" [circular]="circularWithSplitterCheckbox.value">
-  <ng-container listSplitter [chunkSize]="chunkSizeBreakpoints$ | async">
-    <ng-template listChunkContainer let-itemsTmpl>
-      <div *carouselItem class="splitted-list">
-        <ng-container *ngFor="let itemTmpl of itemsTmpl">
-          <ng-container *ngTemplateOutlet="itemTmpl || emptyTmpl"></ng-container>
-          <ng-template #emptyTmpl>
-            <div class="item empty"></div>
-          </ng-template>
-        </ng-container>
+  <ng-container #listSplitterCarousel="listSplitter" [listSplitter]="list" [chunkSize]="chunkSizeBreakpoints$ | async">
+    <ng-container *ngFor="let chunk of listSplitterCarousel.chunks$ | async">
+      <div *carouselItem class="chunk">
+        <div *ngFor="let item of chunk" class="item" [ngClass]="!item && 'empty'">{{ item }}</div>
       </div>
-    </ng-template>
-    <ng-container *ngFor="let item of list">
-      <div *listItem class="item">{{ item }}</div>
     </ng-container>
   </ng-container>
 </app-carousel>
 
-<hr> -->
+<hr>
 
 <h3>Carousel with list splitter and header items</h3>
 
@@ -85,22 +44,16 @@
   #circularWithSplitterHeaderItemsCheckbox="ngModel" [ngModel]="false">
 <label for="circular-with-splitter-header-items-checkbox">Circular carousel</label>
 
-<ng-container listSplitter [chunkSize]="chunkSizeBreakpoints$ | async">
-  <app-carousel position="1" [circular]="circularWithSplitterHeaderItemsCheckbox.value">
-
-    <ng-template listChunkContainer let-itemsTmpl>
-      <div *carouselItem class="splitted-list">
-        <ng-container *ngFor="let itemTmpl of itemsTmpl">
-          <ng-container *ngTemplateOutlet="itemTmpl || emptyTmpl"></ng-container>
-          <ng-template #emptyTmpl>
-            <div class="item empty"></div>
-          </ng-template>
-        </ng-container>
+<ng-container #listSplitterCarousel="listSplitter" [listSplitter]="list" [chunkSize]="chunkSizeBreakpoints$ | async">
+  <div class="chunk">
+    <div *ngFor="let item of (listSplitterCarousel.chunks$ | async | slice:0:1)[0]" class="item"
+      [ngClass]="!item && 'empty'">{{ item }}</div>
+  </div>
+  <app-carousel [circular]="circularWithSplitterHeaderItemsCheckbox.value">
+    <ng-container *ngFor="let chunk of listSplitterCarousel.chunks$ | async | slice:1">
+      <div *carouselItem class="chunk">
+        <div *ngFor="let item of chunk" class="item" [ngClass]="!item && 'empty'">{{ item }}</div>
       </div>
-    </ng-template>
+    </ng-container>
   </app-carousel>
-
-  <ng-container *ngFor="let item of list">
-    <div *listItem class="item">{{ item }}</div>
-  </ng-container>
 </ng-container>

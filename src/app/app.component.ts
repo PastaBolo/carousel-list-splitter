@@ -13,6 +13,7 @@ export class AppComponent {
   @ViewChildren(CarouselComponent) carousels: QueryList<CarouselComponent>;
 
   list = [1, 2, 3, 4, 5, 6, 7, 8];
+  chunkedList = [[1, 2], [3, 4], [5, 6], [7, 8]];
 
   chunkSizeBreakpoints$ = this.breakpointObserver
     .observe([Breakpoints.XSmall, Breakpoints.Small])
@@ -24,5 +25,4 @@ export class AppComponent {
     );
 
   constructor(private breakpointObserver: BreakpointObserver) { }
-
 }
