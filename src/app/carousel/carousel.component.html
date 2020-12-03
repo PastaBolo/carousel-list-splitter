@@ -1,8 +1,8 @@
 <div style="position: relative">
   <div style="overflow: hidden; background: pink">
-    <div [@slide]="{value: direction, params: {spacing: spacing, n: visibleElements}}" (@slide.start)="animating = true"
-      (@slide.done)="animating = false; direction = null" [style.width]="containerWidth()" style="display: flex"
-      [style.gap.px]="spacing">
+    <div [@slide]="{value: direction, params: {spacing: spacing, n: visibleElements, m: sliderSize}}"
+      (@slide.start)="animating = true" (@slide.done)="animating = false; direction = null"
+      [style.width]="containerWidth()" style="display: flex" [style.gap.px]="spacing">
       <div *ngFor="let item of items.toArray() | slice: position: +position + visibleElements; index as i"
         [style.width]="itemWidth()">
         <ng-container *ngTemplateOutlet="items.toArray()[+position + i]"></ng-container>
