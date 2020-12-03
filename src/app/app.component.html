@@ -1,4 +1,4 @@
-<h3>List splitter - display flex (each line)- default item size strategy</h3>
+<!-- <h3>List splitter - display flex (each line)- default item size strategy</h3>
 
 <label>
   <input type="checkbox" #fillCheckbox="ngModel" [ngModel]="false">
@@ -14,7 +14,7 @@
   </div>
 </ng-container>
 
-<hr>
+<hr> -->
 
 <!-- <h3>List splitter - display grid</h3>
 
@@ -51,7 +51,7 @@
   <span>Cyclic</span>
 </label>
 
-<app-carousel [cyclic]="cyclicCheckbox1.value" spacing="20">
+<app-carousel [cyclic]="cyclicCheckbox1.value">
   <ng-container *ngFor="let item of list">
     <div *carouselItem class="item">{{ item?.value }}</div>
   </ng-container>

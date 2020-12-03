@@ -1,7 +1,13 @@
 <div style="position: relative">
-  <div [@slide]="{value: direction, params: {spacing: spacing}}" (@slide.start)="animating = true"
-    (@slide.done)="animating = false; direction = null" class="carousel-content">
-    <ng-container *ngTemplateOutlet="items.toArray()[position]"></ng-container>
+  <div style="overflow: hidden; background: pink">
+    <div [@slide]="{value: direction, params: {spacing: spacing, n: visibleElements}}" (@slide.start)="animating = true"
+      (@slide.done)="animating = false; direction = null" [style.width]="containerWidth()" style="display: flex"
+      [style.gap.px]="spacing">
+      <div *ngFor="let item of items.toArray() | slice: position: +position + visibleElements; index as i"
+        [style.width]="itemWidth()">
+        <ng-container *ngTemplateOutlet="items.toArray()[+position + i]"></ng-container>
+      </div>
+    </div>
   </div>
   <div [style.visibility]="cyclic || position > 0 ? 'visible' : 'hidden'" (click)="!animating && previous()"
     class="navigation previous">

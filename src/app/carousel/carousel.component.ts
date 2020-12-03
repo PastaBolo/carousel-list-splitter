@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ContentChildren, Input, QueryList, TemplateRef } from '@angular/core';
-import { trigger, state, style, transition, group, query, animate } from '@angular/animations';
+import { trigger, state, style, transition, group, query, animate, animateChild } from '@angular/animations';
 import { BooleanInput, coerceBooleanProperty, coerceNumberProperty, NumberInput } from '@angular/cdk/coercion';
 
 import { CarouselItemDirective } from './carousel-item.directive';
@@ -13,29 +13,17 @@ const modulo = (x: number, n: number) => ((x % n) + n) % n;
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('slide', [
-      state('*', style({ position: 'relative' })),
-      transition('* => previous', [
-        group([
-          query(':enter', [
-            style({ transform: 'translateX(calc(-100% - {{spacing}}px))' }),
-            animate('300ms ease-in-out', style({ transform: 'none' }))
-          ]),
-          query(':leave', [
-            style({ position: 'absolute', left: 0 }),
-            animate('300ms ease-in-out', style({ left: 'calc(100% + {{spacing}}px)' }))
-          ])
-        ])
-      ]),
       transition('* => next', [
         group([
-          query(':enter', [
-            style({ transform: 'translateX(calc(100% + {{spacing}}px))' }),
-            animate('300ms ease-in-out', style({ transform: 'none' }))
-          ]),
-          query(':leave', [
-            style({ position: 'absolute', right: 0 }),
-            animate('300ms ease-in-out', style({ right: 'calc(100% + {{spacing}}px)' }))
-          ])
+          animate('5000ms ease-in-out', style({ transform: 'translateX(calc(-1 * (100% + {{spacing}}px) / ({{n}} + 1)))' })),
+          query(':leave', animate('5000ms ease-in-out'))
+        ])
+      ]),
+      transition('* => previous', [
+        style({ transform: 'translateX(calc(-1 * (100% + {{spacing}}px) / ({{n}} + 1)))' }),
+        group([
+          animate('5000ms ease-in-out', style({ transform: 'none' })),
+          query(':leave', animate('5000ms ease-in-out'))
         ])
       ])
     ])
@@ -54,6 +42,8 @@ export class CarouselComponent {
   get cyclic() { return this._cyclic; }
   private _cyclic = false;
 
+  @Input() visibleElements = 1;
+
   @Input() spacing = 0;
 
   direction: 'previous' | 'next' | null = null;
@@ -67,5 +57,17 @@ export class CarouselComponent {
   next() {
     this.position = modulo(+this.position + 1, this.items.length);
     this.direction = 'next';
+  }
+
+  containerWidth() {
+    const n = this.visibleElements;
+    const spacing = this.spacing;
+    return `calc((${(n + 1) * 100}% + ${spacing}px)/${n})`;
+  }
+
+  itemWidth() {
+    const n = this.visibleElements;
+    const spacing = this.spacing;
+    return `calc((100% - ${n * spacing}px)/${n + 1})`;
   }
 }
