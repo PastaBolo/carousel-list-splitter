@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 
 import { CarouselComponent } from './carousel.component';
 import { CarouselItemDirective } from './carousel-item.directive';
-import { MaxPipe } from '../max.pipe'; // TODO
+import { RepeatModule } from '../repeat/repeat.module';
 
 @NgModule({
-  declarations: [CarouselComponent, CarouselItemDirective, MaxPipe],
-  imports: [CommonModule],
+  declarations: [CarouselComponent, CarouselItemDirective],
+  imports: [CommonModule, RepeatModule],
   exports: [CarouselComponent, CarouselItemDirective]
 })
 export class CarouselModule { }

@@ -13,14 +13,14 @@ export class AppComponent {
   @ViewChildren(CarouselComponent) carousels: QueryList<CarouselComponent>;
 
   list = [
-    { value: 1, size: 2 },
+    { value: 0, size: 2 },
+    { value: 1, size: 1 },
     { value: 2, size: 1 },
-    { value: 3, size: 1 },
-    { value: 4, size: 2 },
+    { value: 3, size: 2 },
+    { value: 4, size: 1 },
     { value: 5, size: 1 },
-    { value: 6, size: 1 },
-    { value: 7, size: 2 },
-    { value: 8, size: 1 }
+    { value: 6, size: 2 },
+    { value: 7, size: 1 }
   ];
 
   chunkSize$ = this.breakpointObserver
@@ -28,7 +28,7 @@ export class AppComponent {
     .pipe(
       pluck('breakpoints'),
       map(breakpoints => breakpoints[Breakpoints.XSmall] ? 1 : breakpoints[Breakpoints.Small] ? 2 : 3),
-      tap(() => this.carousels?.toArray().forEach(carousel => carousel.position = 0)),
+      // tap(() => this.carousels?.toArray().forEach(carousel => carousel.position = 0)),
       shareReplay({ refCount: true, bufferSize: 1 })
     );
 

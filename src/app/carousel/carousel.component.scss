@@ -1,6 +1,11 @@
-:host {
-  display: block;
-  width: 100%;
+.slider-container {
+  overflow: hidden;
+
+  .slider {
+    display: grid;
+    position: relative;
+    transition: left 500ms ease-in-out;
+  }
 }
 
 .navigation {
@@ -25,4 +30,21 @@
   display: flex;
   justify-content: center;
   margin-top: 15px;
+  gap: 5px;
+
+  > * {
+    height: 5px;
+    width: 30px;
+    border-radius: 2px;
+    background: #ddd;
+    cursor: pointer;
+
+    &.current-page {
+      background: #aaa;
+    }
+
+    &:hover:not(.current-page) {
+      background: #ccc;
+    }
+  }
 }
