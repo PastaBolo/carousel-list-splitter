@@ -1,11 +1,12 @@
 <div style="position: relative">
   <div style="overflow: hidden; background: pink">
-    <div [@slide]="{value: direction, params: {spacing: spacing, n: visibleElements, m: sliderSize}}"
+    <div
+      [@slide]="{value: direction, params: {spacing: spacing, n: visibleElements, m: sliderSize, translate: translate}}"
       (@slide.start)="animating = true" (@slide.done)="animating = false; direction = null"
       [style.width]="containerWidth()" style="display: flex" [style.gap.px]="spacing">
-      <div *ngFor="let item of items.toArray() | slice: position: +position + visibleElements; index as i"
+      <div *ngFor="let item of items.toArray() | slice: position: position + visibleElements; index as i"
         [style.width]="itemWidth()">
-        <ng-container *ngTemplateOutlet="items.toArray()[+position + i]"></ng-container>
+        <ng-container *ngTemplateOutlet="items.toArray()[position + i]"></ng-container>
       </div>
     </div>
   </div>
@@ -13,7 +14,7 @@
     class="navigation previous">
     <i class="material-icons">navigate_before</i>
   </div>
-  <div [style.visibility]="cyclic || position < items.toArray().length - 1 ? 'visible' : 'hidden'"
+  <div [style.visibility]="cyclic || position + visibleElements < items.toArray().length ? 'visible' : 'hidden'"
     (click)="!animating && next()" class="navigation next">
     <i class="material-icons">navigate_next</i>
   </div>

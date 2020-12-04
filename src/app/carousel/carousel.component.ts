@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ContentChildren, Input, QueryList, TemplateRef } from '@angular/core';
 import { trigger, style, transition, group, query, animate } from '@angular/animations';
-import { BooleanInput, coerceBooleanProperty, coerceNumberProperty, NumberInput } from '@angular/cdk/coercion';
+import { BooleanInput, coerceBooleanProperty, coerceNumberProperty } from '@angular/cdk/coercion';
 
 import { CarouselItemDirective } from './carousel-item.directive';
 
@@ -15,15 +15,15 @@ const modulo = (x: number, n: number) => ((x % n) + n) % n;
     trigger('slide', [
       transition('* => next', [
         group([
-          animate('3000ms ease-in-out', style({ transform: 'translateX(calc(-{{m}} / ({{m}} + {{n}}) * (100% + {{spacing}}px)))' })),
-          query(':leave', animate(3000))
+          animate('1000ms ease-in-out', style({ transform: 'translateX(calc(-{{translate}} / ({{m}} + {{n}}) * (100% + {{spacing}}px)))' })),
+          query(':leave', animate(1000))
         ])
       ]),
       transition('* => previous', [
-        style({ transform: 'translateX(calc(-{{m}} / ({{m}} + {{n}}) * (100% + {{spacing}}px)))' }),
+        style({ transform: 'translateX(calc(-{{translate}} / ({{m}} + {{n}}) * (100% + {{spacing}}px)))' }),
         group([
-          animate('3000ms ease-in-out', style({ transform: 'none' })),
-          query(':leave', animate(3000))
+          animate('1000ms ease-in-out', style({ transform: 'none' })),
+          query(':leave', animate(1000))
         ])
       ])
     ])
@@ -38,35 +38,49 @@ export class CarouselComponent {
   private _cyclic = false;
 
   @Input()
-  set position(position: NumberInput) { this._position = coerceNumberProperty(position, 0); }
+  set stopAtTheEnd(stopAtTheEnd: BooleanInput) { this._stopAtTheEnd = coerceBooleanProperty(stopAtTheEnd); }
+  get stopAtTheEnd() { return this._stopAtTheEnd; }
+  private _stopAtTheEnd = false;
+
+  @Input()
+  set position(position: number) { this._position = coerceNumberProperty(position, 0); }
   get position() { return this._position; }
   private _position = 0;
 
   @Input()
-  set visibleElements(visibleElements: number) { this._position = coerceNumberProperty(visibleElements, 1); }
+  set visibleElements(visibleElements: number) { this._visibleElements = coerceNumberProperty(visibleElements, 1); }
   get visibleElements() { return this._visibleElements; }
   private _visibleElements = 1;
 
   @Input()
-  set sliderSize(sliderSize: number) { this._position = coerceNumberProperty(sliderSize, 1); }
+  set sliderSize(sliderSize: number) { this._sliderSize = coerceNumberProperty(sliderSize, 1); }
   get sliderSize() { return this._sliderSize; }
   private _sliderSize = 1;
 
   @Input()
-  set spacing(spacing: number) { this._position = coerceNumberProperty(spacing, 0); }
+  set spacing(spacing: number) { this._spacing = coerceNumberProperty(spacing, 0); }
   get spacing() { return this._spacing; }
   private _spacing = 0;
 
   direction: 'previous' | 'next' | null = null;
   animating = false;
+  translate: number;
 
   previous() {
-    this.position = modulo(+this.position - this.sliderSize, this.items.length);
+    if (this.stopAtTheEnd) { this.translate = Math.min(this.sliderSize, this.position); }
+    else { this.translate = this.sliderSize; }
+    this.position = modulo(this.position - this.translate, this.items.length);
+    // this.translate = this.sliderSize;
+    // this.position = modulo(this.position - this.sliderSize, this.items.length);
     this.direction = 'previous';
   }
 
   next() {
-    this.position = modulo(+this.position + this.sliderSize, this.items.length);
+    if (this.stopAtTheEnd) { this.translate = Math.min(this.sliderSize, this.items.length - (this.position + this.visibleElements)); }
+    else { this.translate = this.sliderSize; }
+    this.position = modulo(this.position + this.translate, this.items.length);
+    // this.translate = this.sliderSize;
+    // this.position = modulo(this.position + this.sliderSize, this.items.length);
     this.direction = 'next';
   }
 
