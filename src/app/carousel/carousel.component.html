@@ -1,28 +1,27 @@
-<ng-container
-  *ngIf="{position: position$ | async, visibleElements: visibleElements$ | async, pages: pages$ | async, currentPage: currentPage$ | async } as ccc">
+<ng-container *ngIf="carousel$ | async as carousel">
   <div style="position: relative">
-    <div *ngIf="(itemPositions$ | async) || itemPositions as itemPositions" class="slider-container">
+    <div class="slider-container">
       <div #slider class="slider" [style.grid-gap.px]="spacing"
-        [style.grid-template-columns]="'repeat('+items.length+', calc((100% - '+(ccc.visibleElements - 1) * +spacing+'px)/'+ccc.visibleElements+'))'"
-        [style.left.px]="- itemPositions[ccc.position] || 0">
-        <div #displayedItem *ngFor="let item of items.toArray()">
+        [style.grid-template-columns]="'repeat('+carousel.items.length+', calc((100% - '+(carousel.visibleElements - 1) * +spacing+'px)/'+carousel.visibleElements+'))'"
+        [style.left.px]="- carousel.itemPositions[carousel.position] || 0">
+        <div #displayedItem *ngFor="let item of carousel.items">
           <ng-container *ngTemplateOutlet="item"></ng-container>
         </div>
       </div>
     </div>
-    <div [style.visibility]="ccc.position > 0 ? 'visible' : 'hidden'" (click)="goToPage(ccc.currentPage - 1, ccc.pages)"
-      class="navigation previous">
+    <div [style.visibility]="carousel.position > 0 ? 'visible' : 'hidden'"
+      (click)="goToPage(carousel.currentPage - 1, carousel.pages)" class="navigation previous">
       <i class="material-icons">navigate_before</i>
     </div>
-    <div [style.visibility]="ccc.position + ccc.visibleElements < items.toArray().length ? 'visible' : 'hidden'"
-      (click)="goToPage(ccc.currentPage + 1, ccc.pages)" class="navigation next">
+    <div
+      [style.visibility]="carousel.position + carousel.visibleElements < carousel.items.length ? 'visible' : 'hidden'"
+      (click)="goToPage(carousel.currentPage + 1, carousel.pages)" class="navigation next">
       <i class="material-icons">navigate_next</i>
     </div>
   </div>
-  <div *ngIf="ccc.pages.length > 1" class="pagination">
-    <div *repeat="ccc.pages.length; index as i" [ngClass]="{'current-page': i === ccc.currentPage}"
-      (click)="goToPage(i, ccc.pages)">
+  <div *ngIf="carousel.pages.length > 1" class="pagination">
+    <div *repeat="carousel.pages.length; index as i" [ngClass]="{'current-page': i === carousel.currentPage}"
+      (click)="goToPage(i, carousel.pages)">
     </div>
   </div>
-  {{ ccc.pages | json }}
 </ng-container>

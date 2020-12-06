@@ -30,7 +30,7 @@
 
 <ng-container #listSplitter5="listSplitter" [listSplitter]="list" [chunkSize]="chunkSize$ | async"
   [itemSizeStrategy]="itemSizeStrategy">
-  <div *ngFor="let chunk of (listSplitter5.chunks$ | async | slice:0:1)" [style.margin-bottom.px]="20">
+  <div *ngFor="let chunk of (listSplitter5.chunks$ | async | slice: 0: 1)" [style.margin-bottom.px]="20">
     <div class="grid" [style.grid-template-columns]="'repeat('+(chunkSize$ | async)+', 1fr)'">
       <div *ngFor="let chunkItem of chunk" class="item" [style.grid-column]="'auto / span ' + chunkItem.size">
         {{ chunkItem.item.value }}
@@ -38,7 +38,7 @@
     </div>
   </div>
   <app-carousel [visibleElements]="chunkSize$ | async" spacing="20" stopAtTheEnd resetPositionIfChanges>
-    <ng-container *ngFor="let chunk of listSplitter5.chunks$ | async | slice:1">
+    <ng-container *ngFor="let chunk of listSplitter5.chunks$ | async | slice: 1">
       <ng-container *ngFor="let chunkItem of chunk">
         <div *carouselItem class="item">{{ chunkItem.item.value }}</div>
       </ng-container>
