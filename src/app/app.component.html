@@ -18,13 +18,13 @@
 
 <h3>Carousel</h3>
 
-<app-carousel [visibleElements]="chunkSize$ | async" spacing="20" stopAtTheEnd>
+<app-carousel [visibleElements]="chunkSize$ | async" spacing="20" stopAtTheEnd fillSpaceForShortList>
   <ng-container *ngFor="let item of list">
     <div *carouselItem class="item">{{ item.value }}</div>
   </ng-container>
 </app-carousel>
 
-<hr>
+<!-- <hr>
 
 <h3>Carousel with list splitter and header items</h3>
 
@@ -44,4 +44,4 @@
       </ng-container>
     </ng-container>
   </app-carousel>
-</ng-container>
+</ng-container> -->

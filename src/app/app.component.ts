@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, QueryList, ViewChildren } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { map, pluck, shareReplay, tap } from 'rxjs/operators';
+import { map, pluck, shareReplay } from 'rxjs/operators';
 
 import { CarouselComponent } from './carousel/carousel.component';
 @Component({
@@ -15,12 +15,12 @@ export class AppComponent {
   list = [
     { value: 0, size: 2 },
     { value: 1, size: 1 },
-    { value: 2, size: 1 },
-    { value: 3, size: 2 },
-    { value: 4, size: 1 },
-    { value: 5, size: 1 },
-    { value: 6, size: 2 },
-    { value: 7, size: 1 }
+    // { value: 2, size: 1 },
+    // { value: 3, size: 2 },
+    // { value: 4, size: 1 },
+    // { value: 5, size: 1 },
+    // { value: 6, size: 2 },
+    // { value: 7, size: 1 }
   ];
 
   chunkSize$ = this.breakpointObserver
