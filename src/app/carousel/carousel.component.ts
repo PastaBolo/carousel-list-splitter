@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ContentChildren, ElementRef, Input, QueryList, TemplateRef, ViewChildren } from '@angular/core';
 import { BooleanInput, coerceBooleanProperty, coerceNumberProperty, NumberInput } from '@angular/cdk/coercion';
-import { BehaviorSubject, combineLatest, defer, fromEvent, merge } from 'rxjs';
-import { debounceTime, filter, map, mapTo, shareReplay, startWith } from 'rxjs/operators';
+import { asyncScheduler, BehaviorSubject, combineLatest, defer, fromEvent, merge, noop, of } from 'rxjs';
+import { debounceTime, filter, map, mapTo, observeOn, shareReplay, startWith, switchMap } from 'rxjs/operators';
 
 import { CarouselItemDirective } from './carousel-item.directive';
 
@@ -32,7 +32,7 @@ export class CarouselComponent {
   private _resetPositionIfChanges = false;
 
   @Input()
-  set position(position: NumberInput) { this._position$.next(coerceNumberProperty(position, 0)); }
+  set position(position: NumberInput) { this._position$.next(Math.max(coerceNumberProperty(position, 0), 0)); }
   private readonly _position$ = new BehaviorSubject(0);
   private readonly position$ = combineLatest([
     merge(
@@ -41,11 +41,11 @@ export class CarouselComponent {
     ),
     defer(() => this.pages$)
   ]).pipe(
-    map(([position, pages]) => Math.min(position, pages[pages.length - 1].position)),
+    map(([position, pages]) => pages.filter(page => page.position <= position).pop().position),
     shareReplay({ refCount: true, bufferSize: 1 }));
 
   @Input()
-  set visibleElements(visibleElements: NumberInput) { this._visibleElements$.next(coerceNumberProperty(visibleElements, 1)); }
+  set visibleElements(visibleElements: NumberInput) { this._visibleElements$.next(Math.max(coerceNumberProperty(visibleElements, 1), 1)); }
   private readonly _visibleElements$ = new BehaviorSubject(1);
   private readonly visibleElements$ = combineLatest([
     this._visibleElements$.asObservable(),
@@ -56,7 +56,7 @@ export class CarouselComponent {
   );
 
   @Input()
-  set pageSize(pageSize: NumberInput) { this._pageSize$.next(coerceNumberProperty(pageSize)); }
+  set pageSize(pageSize: NumberInput) { this._pageSize$.next(Math.max(coerceNumberProperty(pageSize, 0), 0)); }
   private readonly _pageSize$ = new BehaviorSubject(0);
   private readonly pageSize$ = combineLatest([this._pageSize$.asObservable(), this.visibleElements$]).pipe(
     map(([pageSize, visibleElements]) => pageSize ? Math.min(pageSize, visibleElements) : visibleElements),
@@ -64,15 +64,25 @@ export class CarouselComponent {
   );
 
   @Input()
-  set spacing(spacing: NumberInput) { this._spacing = coerceNumberProperty(spacing, 0); }
+  set spacing(spacing: NumberInput) { this._spacing = Math.max(coerceNumberProperty(spacing, 0), 0); }
   get spacing() { return this._spacing; }
   private _spacing = 0;
 
-  private readonly items$ = defer(() => this.items.changes.pipe(
-    startWith(this.items),
+  readonly carousel$ = defer(() => combineLatest([
+    this.position$, this.visibleElements$, this.pages$, this.currentPage$, this.items$, this.itemPositions$
+  ])).pipe(
+    map(([position, visibleElements, pages, currentPage, items, itemPositions]) => ({
+      position, visibleElements, pages, currentPage, items, itemPositions
+    })),
+    shareReplay({ refCount: true, bufferSize: 1 })
+  );
+
+  private readonly items$ = of(noop).pipe(
+    observeOn(asyncScheduler),
+    switchMap(() => this.items.changes.pipe(startWith(this.items))),
     map(queryList => queryList.toArray()),
     shareReplay({ refCount: true, bufferSize: 1 })
-  ));
+  );
 
   private readonly pages$ = combineLatest([this.items$, this.pageSize$, this.visibleElements$]).pipe(
     map(([items, pageSize, visibleElements]) =>
@@ -91,22 +101,12 @@ export class CarouselComponent {
     shareReplay({ refCount: true, bufferSize: 1 })
   );
 
-  private readonly itemPositions$ = merge(this.items$, fromEvent(window, 'resize')).pipe(
+  private readonly itemPositions$ = merge(this.items$, this.visibleElements$, fromEvent(window, 'resize')).pipe(
     debounceTime(30),
     map(() => this.itemPositions),
     startWith(this.itemPositions),
     shareReplay({ refCount: true, bufferSize: 1 })
   );
-
-  readonly carousel$ = combineLatest([
-    this.position$, this.visibleElements$, this.pages$, this.currentPage$, this.items$, this.itemPositions$
-  ]).pipe(
-    map(([position, visibleElements, pages, currentPage, items, itemPositions]) => ({
-      position, visibleElements, pages, currentPage, items, itemPositions
-    })),
-    shareReplay({ refCount: true, bufferSize: 1 })
-  );
-
 
   goToPage(i: number, pages: Page[]) {
     this._position$.next(pages[i].position);

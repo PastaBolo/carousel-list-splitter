@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, QueryList, ViewChildren } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { map, pluck, shareReplay } from 'rxjs/operators';
 
-import { CarouselComponent } from './carousel/carousel.component';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -10,17 +9,15 @@ import { CarouselComponent } from './carousel/carousel.component';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
-  @ViewChildren(CarouselComponent) carousels: QueryList<CarouselComponent>;
-
   list = [
     { value: 0, size: 2 },
     { value: 1, size: 1 },
-    // { value: 2, size: 1 },
-    // { value: 3, size: 2 },
-    // { value: 4, size: 1 },
-    // { value: 5, size: 1 },
-    // { value: 6, size: 2 },
-    // { value: 7, size: 1 }
+    { value: 2, size: 1 },
+    { value: 3, size: 2 },
+    { value: 4, size: 1 },
+    { value: 5, size: 1 },
+    { value: 6, size: 2 },
+    { value: 7, size: 1 }
   ];
 
   chunkSize$ = this.breakpointObserver
@@ -28,7 +25,6 @@ export class AppComponent {
     .pipe(
       pluck('breakpoints'),
       map(breakpoints => breakpoints[Breakpoints.XSmall] ? 1 : breakpoints[Breakpoints.Small] ? 2 : 3),
-      // tap(() => this.carousels?.toArray().forEach(carousel => carousel.position = 0)),
       shareReplay({ refCount: true, bufferSize: 1 })
     );
 
