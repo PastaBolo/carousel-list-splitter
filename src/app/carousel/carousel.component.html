@@ -20,7 +20,7 @@
     </div>
   </div>
   <div *ngIf="carousel.pages.length > 1" class="pagination">
-    <div *ngFor="let page of carousel.pages; index as i" [ngClass]="{'current-page': i === carousel.currentPage}"
+    <div *ngFor="let page of carousel.pages; index as i" [class.current-page]="i === carousel.currentPage"
       (click)="goToPage(i, carousel.pages)">
     </div>
   </div>

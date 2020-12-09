@@ -101,8 +101,11 @@ export class CarouselComponent {
     shareReplay({ refCount: true, bufferSize: 1 })
   );
 
-  private readonly itemPositions$ = merge(this.items$, this.visibleElements$, fromEvent(window, 'resize')).pipe(
-    debounceTime(30),
+  private readonly itemPositions$ = merge(
+    this.items$,
+    this.visibleElements$,
+    fromEvent(window, 'resize').pipe(debounceTime(30))
+  ).pipe(
     map(() => this.itemPositions),
     startWith(this.itemPositions),
     shareReplay({ refCount: true, bufferSize: 1 })

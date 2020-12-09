@@ -1,11 +1,12 @@
 import { Directive, Input } from '@angular/core';
 import { BooleanInput, coerceBooleanProperty, coerceNumberProperty, NumberInput } from '@angular/cdk/coercion';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
-type Chunk = { start: number, end: number, size: number, item?: unknown }[];
+const DEFAULT_ITEM_SIZE = 1;
+const DEFAULT_CHUNK_SIZE = 1;
 
-const defaultItemSizeStrategy = (item: unknown) => 1;
+type Chunk = { start: number, end: number, size: number, item?: unknown }[];
 
 @Directive({
   selector: '[listSplitter]',
@@ -17,58 +18,49 @@ export class ListSplitterDirective {
   private list$ = new BehaviorSubject([]);
 
   @Input()
-  set chunkSize(chunkSize: NumberInput) { this.chunkSize$.next(coerceNumberProperty(chunkSize, 1)); }
-  private chunkSize$ = new BehaviorSubject(1);
+  set chunkSize(chunkSize: NumberInput) { this.chunkSize$.next(coerceNumberProperty(chunkSize, DEFAULT_CHUNK_SIZE)); }
+  private chunkSize$ = new BehaviorSubject(DEFAULT_CHUNK_SIZE);
 
   @Input()
   set fillWithEmpty(fillWithEmpty: BooleanInput) { this.fillWithEmpty$.next(coerceBooleanProperty(fillWithEmpty)); }
   private fillWithEmpty$ = new BehaviorSubject(false);
 
-  @Input() itemSizeStrategy = defaultItemSizeStrategy;
+  @Input() itemSizeStrategy = (item: unknown) => DEFAULT_ITEM_SIZE;
 
-  chunks$: Observable<Chunk[]> = combineLatest([this.list$, this.chunkSize$, this.fillWithEmpty$]).pipe(
+  chunks$ = combineLatest([this.list$, this.chunkSize$, this.fillWithEmpty$]).pipe(
     map(([list, chunkSize, fillWithEmpty]) => {
-      const chunks = [];
-      let chunk = { size: 0, items: [] };
+      const chunks: Chunk[] = [];
+
+      let size = 0;
+      let chunk: Chunk = [];
 
       for (const item of list) {
-        const itemSize = this.itemSizeStrategy(item) || 1;
+        const itemSize = this.itemSizeStrategy(item) || DEFAULT_ITEM_SIZE;
 
-        if (!chunk.items.length || chunk.size + itemSize <= chunkSize) {
-          chunk = {
-            size: chunk.size + itemSize,
-            items: [
-              ...chunk.items,
-              { start: chunk.size, end: Math.min(chunk.size + itemSize, chunkSize), size: Math.min(itemSize, chunkSize), item }
-            ]
-          };
+        if (!chunk.length || size + itemSize <= chunkSize) {
+          chunk.push({ start: size, end: Math.min(size + itemSize, chunkSize), size: Math.min(itemSize, chunkSize), item });
+          size += itemSize;
         } else {
-          if (fillWithEmpty) { this.fillChunkWithEmpty(chunk, chunkSize); }
+          if (fillWithEmpty) { this.fillChunkWithEmpty(chunk, size, chunkSize); }
           chunks.push(chunk);
-          chunk = {
-            size: itemSize,
-            items: [{ start: 0, end: Math.min(itemSize, chunkSize), size: Math.min(itemSize, chunkSize), item }]
-          };
+          size = itemSize;
+          chunk = [{ start: 0, end: Math.min(itemSize, chunkSize), size: Math.min(itemSize, chunkSize), item }];
         }
       }
-      if (fillWithEmpty) { this.fillChunkWithEmpty(chunk, chunkSize); }
+      if (fillWithEmpty) { this.fillChunkWithEmpty(chunk, size, chunkSize); }
       chunks.push(chunk);
 
-      return chunks.map(chunk => chunk.items);
+      return chunks;
     }),
     shareReplay({ refCount: true, bufferSize: 1 })
   );
 
-  private fillChunkWithEmpty(
-    chunk: { size: number, items: Chunk },
-    chunkSize: number
-  ) {
-    chunk.items = [
-      ...chunk.items,
-      ... (chunk.size < chunkSize
-        ? Array(chunkSize - chunk.size).fill(null)
-          .map((_, i) => ({ start: chunk.size + i, end: chunk.size + i + 1, size: 1 }))
-        : [])
-    ];
+  private fillChunkWithEmpty(chunk: Chunk, currentChunkSize: number, chunkSize: number) {
+    chunk.push(...(
+      currentChunkSize < chunkSize
+        ? Array(chunkSize - currentChunkSize).fill(null)
+          .map((_, i) => ({ start: currentChunkSize + i, end: currentChunkSize + i + 1, size: 1 }))
+        : []
+    ))
   }
 }
