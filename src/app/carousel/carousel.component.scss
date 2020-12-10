@@ -1,28 +1,32 @@
-.slider-container {
-  overflow: hidden;
-
-  .slider {
-    display: grid;
-    position: relative;
-    transition: left 500ms ease-in-out;
+.carousel-container {
+  position: relative;
+  
+  .slider-container {
+    overflow: hidden;
+  
+    .slider {
+      display: grid;
+      position: relative;
+      transition: left 300ms ease-in-out;
+    }
   }
-}
-
-.navigation {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-
-  &.previous {
-    left: -30px;
-  }
-
-  &.next{
-    right: -30px;
+  
+  .navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+  
+    &.previous {
+      left: -30px;
+    }
+  
+    &.next{
+      right: -30px;
+    }
   }
 }
 
@@ -37,7 +41,11 @@
     width: 30px;
     border-radius: 2px;
     background: #ddd;
-    cursor: pointer;
+    transition: background 250ms ease-in-out;
+
+    &:hover:not(.current-page) {
+      cursor: pointer;
+    }
 
     &.current-page {
       background: #aaa;

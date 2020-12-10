@@ -68,6 +68,11 @@ export class CarouselComponent {
   get spacing() { return this._spacing; }
   private _spacing = 0;
 
+  @Input()
+  set overflowSpacing(overflowSpacing: NumberInput) { this._overflowSacing = Math.max(coerceNumberProperty(overflowSpacing, 0), 0); }
+  get overflowSpacing() { return this._overflowSacing; }
+  private _overflowSacing = 0;
+
   readonly carousel$ = defer(() => combineLatest([
     this.position$, this.visibleElements$, this.pages$, this.currentPage$, this.items$, this.itemPositions$
   ])).pipe(
@@ -75,6 +80,14 @@ export class CarouselComponent {
       position, visibleElements, pages, currentPage, items, itemPositions
     })),
     shareReplay({ refCount: true, bufferSize: 1 })
+  );
+
+  readonly animating$ = new BehaviorSubject(false);
+  readonly carouselMargin$ = this.animating$.pipe(
+    map(animating => `${-this.overflowSpacing}px ${animating ? 0 : -this.overflowSpacing}px`)
+  );
+  readonly sliderPadding$ = this.animating$.pipe(
+    map(animating => `${this.overflowSpacing}px ${animating ? 0 : this.overflowSpacing}px`)
   );
 
   private readonly items$ = of(noop).pipe(
@@ -106,8 +119,8 @@ export class CarouselComponent {
     this.visibleElements$,
     fromEvent(window, 'resize').pipe(debounceTime(30))
   ).pipe(
+    observeOn(asyncScheduler),
     map(() => this.itemPositions),
-    startWith(this.itemPositions),
     shareReplay({ refCount: true, bufferSize: 1 })
   );
 

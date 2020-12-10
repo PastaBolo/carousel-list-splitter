@@ -1,7 +1,8 @@
 <ng-container *ngIf="carousel$ | async as carousel">
-  <div style="position: relative">
-    <div class="slider-container">
-      <div #slider class="slider" [style.grid-gap.px]="spacing"
+  <div class="carousel-container" [style.margin]="carouselMargin$ | async">
+    <div class="slider-container" [style.padding]="sliderPadding$ | async">
+      <div #slider class="slider" (transitionstart)="animating$.next(true)" (transitionend)="animating$.next(false)"
+        [style.grid-gap.px]="spacing"
         [style.grid-template-columns]="'repeat('+carousel.items.length+', calc((100% - '+(carousel.visibleElements - 1) * +spacing+'px)/'+carousel.visibleElements+'))'"
         [style.left.px]="- carousel.itemPositions[carousel.position] || 0">
         <div #displayedItem *ngFor="let item of carousel.items">

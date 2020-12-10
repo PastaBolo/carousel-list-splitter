@@ -1,4 +1,4 @@
-<h3>List splitter - display flex (each line) - default item size strategy (chunkSize = f(breakpoints))</h3>
+<!-- <h3>List splitter - display flex (each line) - default item size strategy (chunkSize = f(breakpoints))</h3>
 
 <label>
   <input type="checkbox" #fill="ngModel" [ngModel]="false">
@@ -29,7 +29,7 @@
   </div>
 </ng-container>
 
-<hr>
+<hr> -->
 
 <h3>Carousel</h3>
 
@@ -48,11 +48,13 @@
   </label>
 </div>
 
-<div>Position : {{ (example.carousel$ | async)?.position }}</div>
-<div>Pages : {{ (example.carousel$ | async)?.pages | json }}</div>
+<div style="margin-bottom: 20px">
+  <div>Position : {{ (example.carousel$ | async)?.position }}</div>
+  <div>Pages : {{ (example.carousel$ | async)?.pages | json }}</div>
+</div>
 
 <app-carousel #example [visibleElements]="visibleElements.value" [pageSize]="pageSize.value" [position]="position.value"
-  spacing="20">
+  spacing="20" overflowSpacing="10">
   <ng-container *ngFor="let item of list">
     <div *carouselItem class="item">{{ item.value }}</div>
   </ng-container>
@@ -62,7 +64,7 @@
 
 <h3>Carousel (visibleElements = f(breakpoints))</h3>
 
-<app-carousel [visibleElements]="chunkSize$ | async" spacing="20">
+<app-carousel [visibleElements]="chunkSize$ | async" spacing="20" overflowSpacing="10">
   <ng-container *ngFor="let item of list">
     <div *carouselItem class="item">{{ item.value }}</div>
   </ng-container>
@@ -72,7 +74,7 @@
 
 <h3>Carousel (stopAtTheEnd)</h3>
 
-<app-carousel [visibleElements]="chunkSize$ | async" spacing="20" stopAtTheEnd>
+<app-carousel [visibleElements]="chunkSize$ | async" spacing="20" overflowSpacing="10" stopAtTheEnd>
   <ng-container *ngFor="let item of list">
     <div *carouselItem class="item">{{ item.value }}</div>
   </ng-container>
@@ -82,7 +84,7 @@
 
 <h3>Carousel (fillSpaceForShortList)</h3>
 
-<app-carousel [visibleElements]="chunkSize$ | async" spacing="20" fillSpaceForShortList>
+<app-carousel [visibleElements]="chunkSize$ | async" spacing="20" overflowSpacing="10" fillSpaceForShortList>
   <ng-container *ngFor="let item of list | slice: 0: 2">
     <div *carouselItem class="item">{{ item.value }}</div>
   </ng-container>
@@ -101,7 +103,8 @@
       </div>
     </div>
   </div>
-  <app-carousel [visibleElements]="chunkSize$ | async" spacing="20" stopAtTheEnd resetPositionIfChanges>
+  <app-carousel [visibleElements]="chunkSize$ | async" spacing="20" overflowSpacing="10" stopAtTheEnd
+    resetPositionIfChanges>
     <ng-container *ngFor="let chunk of listSplitter3.chunks$ | async | slice: 1">
       <ng-container *ngFor="let chunkItem of chunk">
         <div *carouselItem class="item">{{ chunkItem.item.value }}</div>
